@@ -1,0 +1,122 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+#define MAX 100
+
+// Stack structure
+typedef struct {
+    char arr[MAX];
+    int top;
+} Stack;
+
+// Function to initialize the stack
+void initializeStack(Stack* stack) {
+    stack->top = -1;
+}
+
+// Function to check if the stack is empty
+int isEmpty(Stack* stack) {
+    return stack->top == -1;
+}
+
+// Function to check if the stack is full
+int isFull(Stack* stack) {
+    return stack->top == MAX - 1;
+}
+
+// Function to peek the top element of the stack
+char peek(Stack* stack) {
+    if (!isEmpty(stack)) {
+        return stack->arr[stack->top];
+    }
+    return -1;
+}
+
+// Function to pop an element from the stack
+char pop(Stack* stack) {
+    if (!isEmpty(stack)) {
+        return stack->arr[stack->top--];
+    }
+    return -1;
+}
+
+// Function to push an element to the stack
+void push(Stack* stack, char c) {
+    if (isFull(stack)) {
+        printf("Stack Overflow!\n");
+        return;
+    }
+    stack->arr[++stack->top] = c;
+}
+
+// Function to check if a character is an operator
+int isOperator(char c) {
+    return (c == '+' || c == '-' || c == '*' || c == '/');
+}
+
+// Function to get the precedence of operators
+int precedence(char c) {
+    if (c == '+' || c == '-') {
+        return 1;
+    } else if (c == '*' || c == '/') {
+        return 2;
+    }
+    return 0;
+}
+
+// Function to convert infix to postfix
+void infixToPostfix(char* infix, char* postfix) {
+    Stack stack;
+    initializeStack(&stack);
+    int i = 0, j = 0;
+
+    while (infix[i] != '\0') {
+        char current = infix[i];
+
+        // If the current character is an operand (alphabet or number)
+        if (isalnum(current)) {
+            postfix[j++] = current;
+        }
+        // If the current character is an opening parenthesis
+        else if (current == '(') {
+            push(&stack, current);
+        }
+        // If the current character is a closing parenthesis
+        else if (current == ')') {
+            while (!isEmpty(&stack) && peek(&stack) != '(') {
+                postfix[j++] = pop(&stack);
+            }
+            pop(&stack); // Pop the '(' from the stack
+        }
+        // If the current character is an operator
+        else if (isOperator(current)) {
+            while (!isEmpty(&stack) && precedence(peek(&stack)) >= precedence(current)) {
+                postfix[j++] = pop(&stack);
+            }
+            push(&stack, current);
+        }
+
+        i++;
+    }
+
+    // Pop all the remaining operators from the stack
+    while (!isEmpty(&stack)) {
+        postfix[j++] = pop(&stack);
+    }
+
+    postfix[j] = '\0'; // Null-terminate the postfix expression
+}
+
+int main() {
+    char infix[MAX], postfix[MAX];
+
+    printf("Enter a valid infix expression: ");
+    scanf("%s", infix);
+
+    infixToPostfix(infix, postfix);
+
+    printf("Postfix expression: %s\n", postfix);
+
+    return 0;
+}
