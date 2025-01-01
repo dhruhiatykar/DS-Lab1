@@ -1,0 +1,109 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 50
+
+struct Employee {
+    int key;
+    char name[50];
+    int age;
+};
+
+struct Employee hashTable[MAX];
+
+void initializeHashTable() {
+    for (int i = 0; i < MAX; i++) {
+        hashTable[i].key = -1;
+    }
+}
+
+int hashFunction(int key, int m) {
+    return key % m;
+}
+
+int linearProbing(int key, int m) {
+    int index = hashFunction(key, m);
+    int i = 0;
+    while (hashTable[(index + i) % m].key != -1) {
+        i++;
+    }
+    return (index + i) % m;
+}
+
+void insertEmployee(int key, const char* name, int age, int m) {
+    int index = hashFunction(key, m);
+    if (hashTable[index].key != -1) {
+        index = linearProbing(key, m);
+    }
+    hashTable[index].key = key;
+    snprintf(hashTable[index].name, sizeof(hashTable[index].name), "%s", name);
+    hashTable[index].age = age;
+    printf("Employee with key %d inserted at index %d.\n", key, index);
+}
+
+void searchEmployee(int key, int m) {
+    int index = hashFunction(key, m);
+    int i = 0;
+    while (hashTable[(index + i) % m].key != -1) {
+        if (hashTable[(index + i) % m].key == key) {
+            printf("Employee found at index %d: Key = %d, Name = %s, Age = %d\n",
+                   (index + i) % m, hashTable[(index + i) % m].key,
+                   hashTable[(index + i) % m].name, hashTable[(index + i) % m].age);
+            return;
+        }
+        i++;
+    }
+    printf("Employee with key %d not found.\n", key);
+}
+
+void displayHashTable(int m) {
+    printf("Hash Table contents:\n");
+    for (int i = 0; i < m; i++) {
+        if (hashTable[i].key != -1) {
+            printf("Index %d: Key = %d, Name = %s, Age = %d\n", i, hashTable[i].key,
+                   hashTable[i].name, hashTable[i].age);
+        }
+    }
+}
+
+int main() {
+    int m;
+    printf("Enter the number of memory locations (m): ");
+    scanf("%d", &m);
+
+    initializeHashTable();
+
+    int choice, key, age;
+    char name[50];
+
+    while (1) {
+        printf("\n1. Insert Employee\n2. Search Employee\n3. Display Hash Table\n4. Exit\nEnter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter employee key (4-digit): ");
+                scanf("%d", &key);
+                printf("Enter employee name: ");
+                scanf("%s", name);
+                printf("Enter employee age: ");
+                scanf("%d", &age);
+                insertEmployee(key, name, age, m);
+                break;
+            case 2:
+                printf("Enter employee key to search: ");
+                scanf("%d", &key);
+                searchEmployee(key, m);
+                break;
+            case 3:
+                displayHashTable(m);
+                break;
+            case 4:
+                exit(0);
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
+    }
+
+    return 0;
+}
