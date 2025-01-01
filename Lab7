@@ -1,0 +1,133 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node* prev;
+    struct Node* next;
+};
+
+struct Node* createNode(int value) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = value;
+    newNode->prev = NULL;
+    newNode->next = NULL;
+    return newNode;
+}
+
+struct Node* createDoublyLinkedList() {
+    struct Node* head = NULL;
+    int n, value;
+    printf("Enter number of elements to insert in the list: ");
+    scanf("%d", &n);
+    
+    for (int i = 0; i < n; i++) {
+        printf("Enter value for node %d: ", i + 1);
+        scanf("%d", &value);
+        struct Node* newNode = createNode(value);
+        if (head == NULL) {
+            head = newNode;
+        } else {
+            struct Node* temp = head;
+            while (temp->next != NULL) {
+                temp = temp->next;
+            }
+            temp->next = newNode;
+            newNode->prev = temp;
+        }
+    }
+    return head;
+}
+
+void displayList(struct Node* head) {
+    if (head == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+    struct Node* temp = head;
+    printf("Doubly Linked List: ");
+    while (temp != NULL) {
+        printf("%d <-> ", temp->data);
+        temp = temp->next;
+    }
+    printf("NULL\n");
+}
+
+void insertLeft(struct Node** head, int value, int newValue) {
+    struct Node* newNode = createNode(newValue);
+    struct Node* temp = *head;
+    while (temp != NULL) {
+        if (temp->data == value) {
+            if (temp->prev != NULL) {
+                temp->prev->next = newNode;
+                newNode->prev = temp->prev;
+            } else {
+                *head = newNode;
+            }
+            newNode->next = temp;
+            temp->prev = newNode;
+            printf("Inserted %d to the left of %d.\n", newValue, value);
+            return;
+        }
+        temp = temp->next;
+    }
+    printf("Node with value %d not found.\n", value);
+}
+
+void deleteNode(struct Node** head, int value) {
+    struct Node* temp = *head;
+    while (temp != NULL) {
+        if (temp->data == value) {
+            if (temp->prev != NULL) {
+                temp->prev->next = temp->next;
+            } else {
+                *head = temp->next;
+            }
+            if (temp->next != NULL) {
+                temp->next->prev = temp->prev;
+            }
+            free(temp);
+            printf("Deleted node with value %d.\n", value);
+            return;
+        }
+        temp = temp->next;
+    }
+    printf("Node with value %d not found.\n", value);
+}
+
+int main() {
+    struct Node* head = NULL;
+    int choice, value, newValue;
+
+    while (1) {
+        printf("\n1. Create Doubly Linked List\n2. Insert Left of Node\n3. Delete Node by Value\n4. Display List\n5. Exit\nEnter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                head = createDoublyLinkedList();
+                break;
+            case 2:
+                printf("Enter value to insert left of: ");
+                scanf("%d", &value);
+                printf("Enter value to insert: ");
+                scanf("%d", &newValue);
+                insertLeft(&head, value, newValue);
+                break;
+            case 3:
+                printf("Enter value to delete: ");
+                scanf("%d", &value);
+                deleteNode(&head, value);
+                break;
+            case 4:
+                displayList(head);
+                break;
+            case 5:
+                exit(0);
+            default:
+                printf("Invalid choice! Try again.\n");
+        }
+    }
+
+    return 0;
+}
