@@ -1,0 +1,150 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+struct Node* createNode(int value) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = value;
+    newNode->next = NULL;
+    return newNode;
+}
+
+struct Node* createLinkedList() {
+    struct Node* head = NULL;
+    int n, value;
+    printf("Enter number of elements to insert in the list: ");
+    scanf("%d", &n);
+    
+    for (int i = 0; i < n; i++) {
+        printf("Enter value for node %d: ", i + 1);
+        scanf("%d", &value);
+        struct Node* newNode = createNode(value);
+        if (head == NULL) {
+            head = newNode;
+        } else {
+            struct Node* temp = head;
+            while (temp->next != NULL) {
+                temp = temp->next;
+            }
+            temp->next = newNode;
+        }
+    }
+    return head;
+}
+
+struct Node* deleteFirst(struct Node* head) {
+    if (head == NULL) {
+        printf("List is empty. Cannot delete the first element.\n");
+        return head;
+    }
+    struct Node* temp = head;
+    head = head->next;
+    free(temp);
+    return head;
+}
+
+struct Node* deleteElement(struct Node* head, int value) {
+    if (head == NULL) {
+        printf("List is empty. Cannot delete element.\n");
+        return head;
+    }
+    
+    struct Node* temp = head;
+    if (head->data == value) {
+        head = head->next;
+        free(temp);
+        return head;
+    }
+
+    struct Node* prev = NULL;
+    while (temp != NULL && temp->data != value) {
+        prev = temp;
+        temp = temp->next;
+    }
+    
+    if (temp == NULL) {
+        printf("Element %d not found in the list.\n", value);
+        return head;
+    }
+
+    prev->next = temp->next;
+    free(temp);
+    return head;
+}
+
+struct Node* deleteLast(struct Node* head) {
+    if (head == NULL) {
+        printf("List is empty. Cannot delete the last element.\n");
+        return head;
+    }
+    
+    if (head->next == NULL) {
+        free(head);
+        return NULL;
+    }
+    
+    struct Node* temp = head;
+    while (temp->next != NULL && temp->next->next != NULL) {
+        temp = temp->next;
+    }
+
+    struct Node* last = temp->next;
+    temp->next = NULL;
+    free(last);
+    return head;
+}
+
+void displayList(struct Node* head) {
+    if (head == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+    
+    struct Node* temp = head;
+    printf("Linked List: ");
+    while (temp != NULL) {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    }
+    printf("NULL\n");
+}
+
+int main() {
+    struct Node* head = NULL;
+    int choice, value;
+
+    while (1) {
+        printf("\n1. Create Linked List\n2. Delete First Element\n3. Delete Specified Element\n4. Delete Last Element\n5. Display List\n6. Exit\nEnter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                head = createLinkedList();
+                break;
+            case 2:
+                head = deleteFirst(head);
+                break;
+            case 3:
+                printf("Enter value to delete: ");
+                scanf("%d", &value);
+                head = deleteElement(head, value);
+                break;
+            case 4:
+                head = deleteLast(head);
+                break;
+            case 5:
+                displayList(head);
+                break;
+            case 6:
+                exit(0);
+            default:
+                printf("Invalid choice! Try again.\n");
+        }
+    }
+
+    return 0;
+}
