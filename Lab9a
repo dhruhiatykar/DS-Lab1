@@ -2,20 +2,25 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #define MAX 50
+
 struct Queue {
     int items[MAX];
     int front, rear;
 };
+
 void initQueue(struct Queue* q) {
     q->front = -1;
     q->rear = -1;
 }
+
 bool isEmpty(struct Queue* q) {
     return q->front == -1;
 }
+
 bool isFull(struct Queue* q) {
     return q->rear == MAX - 1;
 }
+
 void enqueue(struct Queue* q, int value) {
     if (isFull(q)) {
         printf("Queue is full.\n");
@@ -27,6 +32,7 @@ void enqueue(struct Queue* q, int value) {
     q->rear++;
     q->items[q->rear] = value;
 }
+
 int dequeue(struct Queue* q) {
     if (isEmpty(q)) {
         printf("Queue is empty.\n");
@@ -40,6 +46,7 @@ int dequeue(struct Queue* q) {
     }
     return item;
 }
+
 void bfs(int graph[MAX][MAX], int start, int n) {
     bool visited[MAX] = {false};
     struct Queue q;
@@ -48,10 +55,10 @@ void bfs(int graph[MAX][MAX], int start, int n) {
     visited[start] = true;
     enqueue(&q, start);
 
-    printf("BFS Traversal starting from node %d: ", start);
+    printf("BFS Traversal starting from node %d: ", start + 1);
     while (!isEmpty(&q)) {
         int node = dequeue(&q);
-        printf("%d ", node);
+        printf("%d ", node + 1);
 
         for (int i = 0; i < n; i++) {
             if (graph[node][i] == 1 && !visited[i]) {
@@ -69,18 +76,28 @@ int main() {
     printf("Enter the number of nodes: ");
     scanf("%d", &n);
 
+    if (n > MAX) {
+        printf("Error: Number of nodes exceeds maximum limit (%d).\n", MAX);
+        return 1;
+    }
+
     int graph[MAX][MAX];
-    printf("Enter the adjacency matrix:\n");
+    printf("Enter the adjacency matrix (0 or 1):\n");
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             scanf("%d", &graph[i][j]);
         }
     }
 
-    printf("Enter the starting node for BFS traversal: ");
+    printf("Enter the starting node for BFS traversal (1 to %d): ", n);
     scanf("%d", &start);
 
-    bfs(graph, start, n);
+    if (start < 1 || start > n) {
+        printf("Error: Invalid starting node.\n");
+        return 1;
+    }
+
+    bfs(graph, start - 1, n);
 
     return 0;
 }
