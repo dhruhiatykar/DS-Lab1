@@ -18,13 +18,11 @@ struct Node* insert(struct Node* root, int value) {
     if (root == NULL) {
         return createNode(value);
     }
-    
     if (value < root->data) {
         root->left = insert(root->left, value);
     } else if (value > root->data) {
         root->right = insert(root->right, value);
     }
-    
     return root;
 }
 
@@ -57,15 +55,12 @@ void displayTree(struct Node* root) {
         printf("Tree is empty.\n");
         return;
     }
-    
     printf("In-order Traversal: ");
     inorder(root);
     printf("\n");
-    
     printf("Pre-order Traversal: ");
     preorder(root);
     printf("\n");
-    
     printf("Post-order Traversal: ");
     postorder(root);
     printf("\n");
@@ -92,8 +87,7 @@ int main() {
                 exit(0);
             default:
                 printf("Invalid choice! Try again.\n");
-        
+        }
     }
-
     return 0;
 }
